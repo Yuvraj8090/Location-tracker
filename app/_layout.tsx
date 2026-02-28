@@ -1,24 +1,56 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from '../store/useAuth';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+function RootLayoutInner() {
+  const { isLoggedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+  
+  // Track if the layout has mounted to prevent premature navigation
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+  useEffect(() => {
+    setIsNavigationReady(true);
+  }, []);
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    // 1. Don't run logic if navigation isn't mounted
+    if (!isNavigationReady) return;
+
+    const inAuthGroup = segments.includes('(auth)');
+
+    // 2. Perform the Auth Gate logic
+    if (!isLoggedIn && !inAuthGroup) {
+      router.replace('/(auth)/login');
+    } else if (isLoggedIn && inAuthGroup) {
+      router.replace('/(tabs)');
+    }
+  }, [isLoggedIn, segments, isNavigationReady]); // Include isNavigationReady
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <>
+      <StatusBar style="light" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen
+          name="task-detail"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+          }}
+        />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutInner />
+    </AuthProvider>
   );
 }

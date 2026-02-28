@@ -1,50 +1,110 @@
-# Welcome to your Expo app 👋
+# FieldTrack Enterprise – React Native App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Project Structure
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+fieldtrack/
+├── app/
+│   ├── _layout.tsx              ← Root layout (auth gate)
+│   ├── task-detail.tsx          ← Task detail modal screen
+│   ├── (auth)/
+│   │   ├── _layout.tsx
+│   │   └── login.tsx            ← Login screen
+│   └── (tabs)/
+│       ├── _layout.tsx          ← Bottom tab navigator
+│       ├── index.tsx            ← Home dashboard
+│       ├── tasks.tsx            ← Tasks list
+│       ├── map.tsx              ← Live map (OSM-based)
+│       ├── security.tsx         ← Device security checks
+│       └── profile.tsx          ← User profile
+├── components/
+│   ├── Badge.tsx                ← Status badge
+│   ├── StatCard.tsx             ← Dashboard stat card
+│   ├── TaskCard.tsx             ← Reusable task card
+│   └── SecurityBanner.tsx       ← Security status strip
+├── constants/
+│   ├── theme.ts                 ← Colors, typography
+│   └── data.ts                  ← Dummy data (replace with API)
+├── store/
+│   └── useAuth.ts               ← Auth context
+├── app.json
+├── package.json
+├── tsconfig.json
+└── babel.config.js
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Quick Start
 
-## Learn more
+```bash
+# 1. Install dependencies
+npm install
 
-To learn more about developing your project with Expo, look at the following resources:
+# 2. Run on Android
+npx expo run:android
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# 3. Run on iOS
+npx expo run:ios
 
-## Join the community
+# 4. Expo Go (quick test)
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+## Key Technologies
+- **Expo Router** – File-based navigation
+- **@expo/vector-icons** – Ionicons (included in Expo)
+- **OpenStreetMap** – Free map tiles (no billing)
+- **React Native StyleSheet** – No external CSS
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Production Upgrades (Phase 2)
+
+### Real Map
+```bash
+npm install @maplibre/maplibre-react-native
+# Replace <SimulatedMap> in map.tsx with <MapLibreGL.MapView>
+# Tile URL: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+```
+
+### Background GPS
+```bash
+npx expo install expo-location expo-task-manager
+```
+
+### Security (Anti-tamper)
+```bash
+npm install react-native-device-info
+npm install @dr.pogodin/react-native-root-detection
+# Implement checks in hooks/useSecurityCheck.ts
+```
+
+### JWT Auth (replace dummy)
+```bash
+npm install axios @react-native-async-storage/async-storage
+# Update store/useAuth.ts to call your API
+```
+
+### Real-time Tracking
+```bash
+npm install socket.io-client
+# Connect to your Node.js WebSocket server
+```
+
+## Backend API Endpoints (to be implemented)
+
+| Method | Endpoint                    | Description               |
+|--------|-----------------------------|---------------------------|
+| POST   | /api/auth/login             | JWT login                 |
+| GET    | /api/tasks                  | Get assigned tasks        |
+| PUT    | /api/tasks/:id/status       | Update task status        |
+| POST   | /api/location/update        | Live GPS update           |
+| POST   | /api/security/violation     | Report security event     |
+| GET    | /api/routes/:taskId         | Get allowed route         |
+
+## Environment Variables (.env)
+
+```
+EXPO_PUBLIC_API_URL=https://your-api.com
+EXPO_PUBLIC_MAP_TILE_URL=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+```
+
+## License
+Enterprise Internal Use Only

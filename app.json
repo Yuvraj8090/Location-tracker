@@ -1,25 +1,44 @@
 {
   "expo": {
-    "name": "FieldTrackerExpo",
-    "slug": "FieldTrackerExpo",
+    "name": "FieldTrack",
+    "slug": "fieldtrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "fieldtrackerexpo",
-    "userInterfaceStyle": "automatic",
+    "scheme": "fieldtrack",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fieldtrack.enterprise",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
+        "NSLocationWhenInUseUsageDescription": "FieldTrack needs location to track your field tasks.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "FieldTrack uses background location for live task tracking.",
+        "NSLocationAlwaysUsageDescription": "FieldTrack tracks your route in the background during active tasks."
+      }
     },
     "android": {
+      "package": "com.fieldtrack.enterprise",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0A0E1A",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION"
+      ]
     },
     "web": {
       "output": "static",
@@ -33,10 +52,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#0A0E1A"
         }
       ]
     ],
