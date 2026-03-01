@@ -1,14 +1,14 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../store/useAuth';
 
 function RootLayoutInner() {
   const { isLoggedIn } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  
-  // Track if the layout has mounted to prevent premature navigation
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
@@ -16,23 +16,25 @@ function RootLayoutInner() {
   }, []);
 
   useEffect(() => {
-    // 1. Don't run logic if navigation isn't mounted
     if (!isNavigationReady) return;
-
     const inAuthGroup = segments.includes('(auth)');
 
-    // 2. Perform the Auth Gate logic
     if (!isLoggedIn && !inAuthGroup) {
       router.replace('/(auth)/login');
     } else if (isLoggedIn && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [isLoggedIn, segments, isNavigationReady]); // Include isNavigationReady
+  }, [isLoggedIn, segments, isNavigationReady]);
 
   return (
-    <>
+    // SafeAreaView adds the necessary padding for notches and bottom bars
+    // edges={['top', 'bottom']} specifically targets the vertical spacing
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ 
+        headerShown: false,
+        contentStyle: { backgroundColor: '#F5F7FA' } // Standardizes background color
+      }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
@@ -43,14 +45,23 @@ function RootLayoutInner() {
           }}
         />
       </Stack>
-    </>
+    </SafeAreaView>
   );
 }
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootLayoutInner />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <RootLayoutInner />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000', // Matches your StatusBar "light" style (dark background)
+  },
+});
